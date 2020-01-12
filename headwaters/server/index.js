@@ -8,6 +8,7 @@ const journalRouter = require('../routes/journal');
 const pillboxRouter = require('../routes/pillbox');
 const googleRouter = require('../routes/google');
 const apiRouter = require('../routes/api');
+const medsTracker = require('../routes/tracker');
 
 const app = express();
 // Init Middleware
@@ -19,6 +20,7 @@ app.use('/pillbox', pillboxRouter);
 app.use('/api', apiRouter);
 //add route to hit google api
 app.use('/eventAuth', googleRouter);
+app.use('/tracker', medsTracker);
 
 
 app.get('/api/auth', async(req, res) => {

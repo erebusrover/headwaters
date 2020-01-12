@@ -214,7 +214,8 @@ const getUserMedications = userId => {
   // | grapjuice | thismed.jpg |      2 |         2 | [13:00]         | dr.crusher   | away vaccine |
   // +-----------+-------------+--------+-----------+-----------------+--------------+--------------+
 
-  const userMedicationsSQL =    'SELECT name, url, dosage, frequency, scheduled_times, date_time, practitioner, notes FROM meds m inner join images i on m.id = i.meds_id inner join users_meds u on u.users_meds_med = m.id WHERE users_meds_user = ?';
+
+  const userMedicationsSQL =    'SELECT name, url, dosage, frequency, scheduled_times, date_time, practitioner, users_meds_med, notes FROM meds m inner join images i on m.id = i.meds_id inner join users_meds u on u.users_meds_med = m.id WHERE users_meds_user = ?';
   return query(userMedicationsSQL, [`${userId}`]);
 };
 
@@ -222,6 +223,7 @@ const insertIntoMeds = (userId, med) => {
   // takes in a userId and a medication name
   // adds both to meds table
   // query returns row with med id
+  ;
   const medicationFields = [`${userId}`, `${med}`];
   const medicationSQL = 'insert into meds(med_id_user, name) values(?, ?)';
   const getMedId = 'SELECT LAST_INSERT_ID()';
@@ -266,7 +268,9 @@ const insertIntoUsersMeds = (userId, medId, imgId, newMedicationObj) => {
     `${notes}`,
   ];
 
+
   const userMedicationsSQL =    'insert into users_meds(users_meds_user, users_meds_med, id_img, dosage, frequency, scheduled_times, date_time, practitioner, notes) values(?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  
   return query(userMedicationsSQL, medicationFields);
 };
 
@@ -275,9 +279,7 @@ const addUserMedicationMaster = (newMedicationObj, userId) => {
   // will need to add userId, name to meds table (2nd helper?)
   // will need to add url to images table (2nd helper?)
   // will need to add userId, medId, imgId, dosage, frequency, scheduled_times, practitioner, notes to users_meds
-
   const { med, url } = newMedicationObj;
-
   const medIdInsertion = async() => {
     const medIdResponse = await insertIntoMeds(userId, med);
     return medIdResponse;
@@ -325,7 +327,7 @@ const insertUserMedsHistory = (userId, medId, freqObj) => {
 };
 
 const getUserMedHistory = userId => {
-  const selectHistoryByUserId = 'select * from journals where meds_history_user = ?';
+  const selectHistoryByUserId = 'select * from meds_history where meds_history_user = ?';
   return query(selectHistoryByUserId, [`${userId}`]);
 };
 
