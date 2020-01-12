@@ -1,6 +1,5 @@
 /* eslint-disable no-return-await */
 import axios from 'axios';
-import saveToGoogleCal from '../../../server/googleAxios';
 /**
  * Axios authentication helpers
  */
@@ -34,17 +33,6 @@ export const createUserEvent = async eventObj => {
       console.error(err);
     });
 };
-
-export const createGoogleEvent = async eventObj => {
-  return await axios
-  .post(`/eventAuth/posting`, eventObj)
-  .then(res => {
-    console.log(res.status);
-  })
-  .catch(err => {
-    console.error(err);
-  });
-;}
 
 export const chooseEventColor = type => {
   let color;
@@ -88,6 +76,26 @@ export const handleIncomingData = incomingEvents => {
         location: incomingEvent.location,
         notes: incomingEvent.notes,
         type: incomingEvent.type,
+      },
+    });
+
+    return newEventObj;
+  }, []);
+};
+
+
+export const handleIncomingMeds = incomingEvents => {
+  return incomingEvents.reduce((newEventObj, incomingEvent) => {
+    const start = incomingEvent.date_time;
+    start.replace(' ', 'T');
+
+    newEventObj.push({
+      user: incomingEvent.users_meds_user,
+      id: incomingEvent.users_meds_med,
+      start,
+      color: chooseEventColor(incomingEvent.type),
+      extendedProps: {
+        dosage: incomingEvent.dosage,
       },
     });
 

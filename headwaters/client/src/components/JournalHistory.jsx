@@ -41,7 +41,8 @@ const JournalHistory = () => {
               padding: 10, 
               margin: 10, 
               backgroundColor: 'rgba(255, 255, 255, 0.4)'}} key={journal.id}>
-                <div style={{ fontWeight: 'bolder', fontSize: '140%', color: '#1B2F44' }}>{moment(journal.date).format('MMMM Do YYYY')}</div>
+              <div style={{ fontWeight: 'bolder', fontSize: '140%', color: '#1B2F44' }}>{moment(journal.date).format('MMMM Do YYYY')}</div>
+              
               <div><strong>Journal Entry:</strong> {journal.text} </div>
               <div><strong>Feeling:</strong> {journal.status} </div>
               <div><strong>sleep:</strong> {journal.sleep} hours</div>

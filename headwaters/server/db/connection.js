@@ -214,8 +214,9 @@ const getUserMedications = userId => {
   // | grapjuice | thismed.jpg |      2 |         2 | [13:00]         | dr.crusher   | away vaccine |
   // +-----------+-------------+--------+-----------+-----------------+--------------+--------------+
 
-  const userMedicationsSQL =    'SELECT name, url, dosage, frequency, scheduled_times, practitioner, users_meds_med, notes FROM meds m inner join images i on m.id = i.meds_id inner join users_meds u on u.users_meds_med = m.id WHERE users_meds_user = ?';
-  return query(userMedicationsSQL, [`${userId}`])
+
+  const userMedicationsSQL =    'SELECT name, url, dosage, frequency, scheduled_times, date_time, practitioner, users_meds_med, notes FROM meds m inner join images i on m.id = i.meds_id inner join users_meds u on u.users_meds_med = m.id WHERE users_meds_user = ?';
+  return query(userMedicationsSQL, [`${userId}`]);
 };
 
 const insertIntoMeds = (userId, med) => {
@@ -252,7 +253,7 @@ const insertIntoImages = (url, medId) => {
 const insertIntoUsersMeds = (userId, medId, imgId, newMedicationObj) => {
   // insert into users_meds(users_meds_user, users_meds_med, id_img, dosage, frequency, scheduled_times, practitioner, notes) values(1, 3, 1, 2, 2, '[13:00]', 'dr.crusher', 'away vaccine');
   const {
-  dosage, frequency, times, practitioner, notes 
+  dosage, frequency, times, practitioner, notes , dateTime
 } = newMedicationObj;
 
   const medicationFields = [
@@ -262,10 +263,14 @@ const insertIntoUsersMeds = (userId, medId, imgId, newMedicationObj) => {
     `${dosage}`,
     `${frequency}`,
     `${times}`,
+    `${dateTime}`,
     `${practitioner}`,
     `${notes}`,
   ];
-  const userMedicationsSQL =    'insert into users_meds(users_meds_user, users_meds_med, id_img, dosage, frequency, scheduled_times, practitioner, notes) values(?, ?, ?, ?, ?, ?, ?, ?)';
+
+
+  const userMedicationsSQL =    'insert into users_meds(users_meds_user, users_meds_med, id_img, dosage, frequency, scheduled_times, date_time, practitioner, notes) values(?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  
   return query(userMedicationsSQL, medicationFields);
 };
 
@@ -296,7 +301,7 @@ const addUserMedicationMaster = (newMedicationObj, userId) => {
   });
 };
 
-const createUserMedEvents = () => {
+const createUserMedEvents = (userId, medObj) => {
   // will create an event for the user *for each submitted time with:
   // userId, name = name of medication
   // date_time

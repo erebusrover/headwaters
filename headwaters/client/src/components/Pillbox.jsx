@@ -66,6 +66,13 @@ const Pillbox = () => {
     setTime(value);
   };
 
+  const [date, setDate] = useState([]);
+  const handleDate = e => {
+    e.preventDefault();
+    const { value } = e.target;
+    setDate(value);
+  };
+
   const [frequency, setFrequency] = useState([]);
 
   const [times] = useState([]);
@@ -99,6 +106,7 @@ const Pillbox = () => {
       practitioner,
       frequency,
       times,
+      dateTime: `${date} ${time}`,
       notes,
       url,
       userId,
@@ -119,6 +127,7 @@ const Pillbox = () => {
     return 'Loading...';
   }
 
+  console.log(date + ' ' + time);
   return (
     <Container className="new-medication-form">
       <div>
@@ -178,10 +187,31 @@ const Pillbox = () => {
                   size="sm"
                   onClick={addTime}
                 >
-                  add time
+                  Set time
                 </Button>{' '}
-                <span>*please click to save each time</span>
               </FormGroup>
+
+                <FormGroup>
+                  <Label for="time">Date</Label>
+                  <Input
+                    type="date"
+                    name="date"
+                    id="date"
+                    dateformat="YYYY-MM-DD"
+                    placeholder="date placeholder"
+                    value={date}
+                    onChange={handleDate}
+                  />
+                  <br />
+                  <Button
+                    style={{ backgroundColor: '#083855', border: '0px' }}
+                    size="sm"
+                    onClick={addTime}
+                  >
+                    Set date
+                </Button>{' '}
+              </FormGroup>
+              
               <FormGroup>
                 <Label htmlFor="status">How often should it be taken?</Label>
                 <Input
