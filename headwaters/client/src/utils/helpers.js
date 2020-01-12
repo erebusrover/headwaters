@@ -42,7 +42,6 @@ export const createGoogleEvent = async eventObj => {
     console.log(res.status);
   })
   .catch(err => {
-    debugger;
     console.error(err);
   });
 ;}

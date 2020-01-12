@@ -3,14 +3,15 @@ const {
   insertUserMedsHistory,
   getUserMedHistory,
   patchUserMedHistory,
+  getUserMedications
 } = require('../server/db/connection');
 
 const trackerRouter = express.Router();
 
+
 //endpoint to get all user med history from db
 trackerRouter.get('/:userId/history', (req, res) => {
   const { userId } = req.params;
-
   getUserMedHistory(userId)
     .then(medHistory => {
       res.send(medHistory);
@@ -24,9 +25,12 @@ trackerRouter.get('/:userId/history', (req, res) => {
 //endpoint to post user med history to db
 trackerRouter.post('/:userId/history', (req, res) => {
   const { userId } = req.params;
-  const medHistoryObj = req.body[0];
-
-  insertUserMedsHistory(medHistoryObj, userId)
+  let { medId, freq, date} = req.body;
+  //todo need to remove this failsafe when done
+  if(medId===undefined){
+    medId = 1;
+  }
+  insertUserMedsHistory(userId, medId, {date, freq})
     .then(() => {
       res.sendStatus(201);
     })

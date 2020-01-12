@@ -9,8 +9,10 @@ import {
   Events,
   UrlButton,
   ImageEvent,
+  Button,
   TextEvent,
 } from '@merc/react-timeline';
+import Axios from 'axios';
 // import Chronology from 'react-chronos';
 
 const MedTracker = () => {
@@ -34,6 +36,15 @@ const MedTracker = () => {
     newArr[2] = newArr[2][2] + newArr[2][3];
     return newArr.join("/");
   }
+  const handleTookMed = (pillEvent, prescription, userId)=>{
+    const {date, frequency_taken} = pillEvent;
+    const {medName} = prescription
+    Axios.post(`/tracker/${userId}/history`,{
+      date,
+      medName,
+      freq: frequency_taken,
+    })
+  }
   const toggle = () => setDropdownOpen(prevState => !prevState);
   //settings for the timeline
   const opts = {
@@ -47,6 +58,18 @@ const MedTracker = () => {
     //   entryDate,
     //   'ddd MMM DD YYYY HH:mm:ss',
     // ).format('YYYY-MM-DD HH:mm:ss');
+    //gets user pillbox data
+    Axios.get(`/pillbox/${userId}/`)
+    .then(response=>{
+      console.log(response.data);
+    });
+    Axios.get(`/tracker/${userId}/history`)
+    .then(response=>{
+      console.log(response);
+    })
+    .catch(err=>{
+      console.log('get med history failed ',err)
+    })
     //! possible frequencies "1x daily", "2x daily", "3x daily", "1x weekly"
     //todo delete after endpoint is build
     const dummyDate =  new Date().toString();
@@ -132,9 +155,18 @@ const MedTracker = () => {
         <Timeline opts={opts}>
           <Events>
             {pillHistory.map((pillEvent)=>{
-              return (<TextEvent date={dateFormatter(pillEvent.date)} text={prescription[0] ? prescription[0].medName : "yo no data yet"} />);
+              return (
+              <TextEvent 
+              date={dateFormatter(pillEvent.date)} 
+              // key={dateFormatter(pillEvent.date)}
+              text={prescription[0] ? prescription[0].medName : "yo no data yet"} >
+                  <Button onClick={() => { handleTookMed(pillEvent, prescription, userId)}}>
+                  Took Medicine
+                </Button>
+              </TextEvent>);
             })}
-            <TextEvent date="1/1/19" text={prescription[0] ? prescription[0].medName: "yo no data yet"} />
+            <TextEvent date="1/1/19" text={prescription[0] ? prescription[0].medName: "yo no data yet"}>
+            </TextEvent>
             <TextEvent date="1/1/14" text="**Markdown** is *supported*" />
             <TextEvent date="1/1/12" text="**Markdown** is *supported*" />
 
