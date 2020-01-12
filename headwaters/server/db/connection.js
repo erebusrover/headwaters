@@ -214,7 +214,7 @@ const getUserMedications = userId => {
   // | grapjuice | thismed.jpg |      2 |         2 | [13:00]         | dr.crusher   | away vaccine |
   // +-----------+-------------+--------+-----------+-----------------+--------------+--------------+
 
-  const userMedicationsSQL =    'SELECT name, url, dosage, frequency, scheduled_times, practitioner, notes FROM meds m inner join images i on m.id = i.meds_id inner join users_meds u on u.users_meds_med = m.id WHERE users_meds_user = ?';
+  const userMedicationsSQL =    'SELECT name, url, dosage, frequency, scheduled_times, practitioner, users_meds_med, notes FROM meds m inner join images i on m.id = i.meds_id inner join users_meds u on u.users_meds_med = m.id WHERE users_meds_user = ?';
   return query(userMedicationsSQL, [`${userId}`])
 };
 
