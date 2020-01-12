@@ -47,6 +47,29 @@ const MedTracker = () => {
       medId
     })
   }
+  const pastSevenDays = ()=>{
+    const dummyDate = new Date().toString();
+    const currentDay = moment()
+    const daysArr = [currentDay];
+    for(let i = 0; i < 6; i++){
+      daysArr.push(currentDay.subtract(i, 'days'))
+    }
+    const daysArrMapped = daysArr.map(day=>{
+      return moment(
+        day,
+        'ddd MMM DD YYYY HH:mm:ss',
+      ).format('MM/DD/YY');
+    })
+
+
+    const date = moment(
+      dummyDate,
+      'ddd MMM DD YYYY HH:mm:ss',
+      ).format('MM/DD/YY');
+    debugger;
+    return daysArrMapped;
+    
+  }
   const toggle = () => setDropdownOpen(prevState => !prevState);
   //settings for the timeline
   const opts = {
@@ -108,6 +131,7 @@ const MedTracker = () => {
 
     //! possible frequencies "1x daily", "2x daily", "3x daily", "1x weekly"
     //todo delete after endpoint is build
+    pastSevenDays();
     const dummyDate =  new Date().toString();
     const date = moment(
       dummyDate,

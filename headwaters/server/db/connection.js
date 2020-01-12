@@ -214,7 +214,7 @@ const getUserMedications = userId => {
   // | grapjuice | thismed.jpg |      2 |         2 | [13:00]         | dr.crusher   | away vaccine |
   // +-----------+-------------+--------+-----------+-----------------+--------------+--------------+
 
-
+  debugger;
   const userMedicationsSQL =    'SELECT name, url, dosage, frequency, scheduled_times, date_time, practitioner, users_meds_med, notes FROM meds m inner join images i on m.id = i.meds_id inner join users_meds u on u.users_meds_med = m.id WHERE users_meds_user = ?';
   return query(userMedicationsSQL, [`${userId}`]);
 };
@@ -255,7 +255,7 @@ const insertIntoUsersMeds = (userId, medId, imgId, newMedicationObj) => {
   const {
   dosage, frequency, times, practitioner, notes , dateTime
 } = newMedicationObj;
-
+  debugger;
   const medicationFields = [
     `${userId}`,
     `${medId}`,
@@ -316,13 +316,14 @@ const createUserMedEvents = (userId, medObj) => {
 
 const insertUserMedsHistory = (userId, medId, freqObj) => {
   const { date, freq } = freqObj;
+  debugger;
   const historyFields = [
     `${userId}`,
     `${medId}`,
     `${date}`,
     `${freq}`,
   ];
-  const medsHistorySQL = 'insert into meds_history(meds_history_user, meds_history_med, date, frequency_taken) values(?, ?, ?, ?)';
+  const medsHistorySQL = 'insert into meds_history(meds_history_user, meds_history_med, date_time, frequency_taken) values(?, ?, ?, ?)';
   return query(medsHistorySQL, historyFields);
 };
 
