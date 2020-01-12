@@ -12,6 +12,7 @@ const trackerRouter = express.Router();
 //endpoint to get all user med history from db
 trackerRouter.get('/:userId/history', (req, res) => {
   const { userId } = req.params;
+  debugger;
   getUserMedHistory(userId)
     .then(medHistory => {
       res.send(medHistory);

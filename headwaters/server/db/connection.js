@@ -322,7 +322,7 @@ const insertUserMedsHistory = (userId, medId, freqObj) => {
 };
 
 const getUserMedHistory = userId => {
-  const selectHistoryByUserId = 'select * from journals where meds_history_user = ?';
+  const selectHistoryByUserId = 'select * from meds_history where meds_history_user = ?';
   return query(selectHistoryByUserId, [`${userId}`]);
 };
 

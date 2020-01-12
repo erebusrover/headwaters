@@ -65,7 +65,7 @@ const MedTracker = () => {
     });
     Axios.get(`/tracker/${userId}/history`)
     .then(response=>{
-      console.log(response);
+      console.log(response.data);
     })
     .catch(err=>{
       console.log('get med history failed ',err)
