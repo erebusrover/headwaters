@@ -254,7 +254,7 @@ const insertIntoUsersMeds = (userId, medId, imgId, newMedicationObj) => {
   const {
   dosage, frequency, times, practitioner, notes , dateTime
 } = newMedicationObj;
-  debugger;
+  //todo
   const medicationFields = [
     `${userId}`,
     `${medId}`,
