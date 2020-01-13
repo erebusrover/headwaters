@@ -26,7 +26,6 @@ trackerRouter.get('/:userId/history', (req, res) => {
 trackerRouter.post('/:userId/history', (req, res) => {
   const { userId } = req.params;
   let { medId, freq, date} = req.body;
-  debugger;
   insertUserMedsHistory(userId, medId, {date, freq})
     .then(() => {
       res.sendStatus(201);

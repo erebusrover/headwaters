@@ -315,7 +315,6 @@ const createUserMedEvents = (userId, medObj) => {
 
 const insertUserMedsHistory = (userId, medId, freqObj) => {
   const { date, freq } = freqObj;
-  debugger;
   const historyFields = [
     `${userId}`,
     `${medId}`,
