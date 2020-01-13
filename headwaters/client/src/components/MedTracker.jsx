@@ -16,86 +16,55 @@ import styled from 'styled-components';
 // import Chronology from 'react-chronos';
 
 const MedTracker = () => {
+  
   const { user } = useAuth0();
   const [userId] = useState(user.id);
   //need the prescription and the pillhistory
   const [prescription, setPrescription] = useState([]);
+  const [totalPillHistory, setTotalPillHistory]=useState([]);
   const [pillHistory, setPillHistory] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [currentMed, setCurrentMed] = useState({ medName: "Choose Medicine"});
+  const spanPositiveStyle = {
+    borderRadius: '4px',
+    borderColor: '#070D24',
+    borderWidth: '3px',
+    // transform: 'rotate(45deg)',
+    backgroundColor: 'Green',
+  };
+  const spanNegativeStyle = {
+    borderRadius: '4px',
+    borderColor: '#070D24',
+    borderWidth: '3px',
+    // transform: 'rotate(45deg)',
+    backgroundColor: 'Red',
+  };
+  const MyCustomMarkerPos = () => <span style={spanPositiveStyle}>O</span>;
+  const MyCustomMarkerNeg = () => <span style={spanNegativeStyle}>O</span>;
   const getServerData = ()=>{
     Axios.get(`/pillbox/${userId}/`)
       .then(response => {
         const prescriptions = response.data.map(prescription => {
           prescription.medId = prescription.users_meds_med;
           prescription.medName = prescription.name;
-          if (!prescription.medName) {
-            prescription.medName = 'dummy data';
-            console.log('prescription.medName was undefined')
-          }
-          if (!prescription.dosage) {
-            prescription.dosage = 'dummy data';
-            console.log('prescription.dosage was undefined')
-          }
-          if (!prescription.frequency) {
-            prescription.frequency = 'dummy data';
-            console.log('prescription.frequency was undefined')
-          }
           return prescription
         });
-        //  medName: "xanax",
-        //     dosage: 2,
-        //     frequency: "1x daily",
-        //     scheduled_times: "often",
-        //     practicioner: "bobby",
-        //     notes: "lala",
-
+        
         //todo this is the problem somehow
         setPrescription(prescriptions)
         console.log(prescriptions);
       })
     Axios.get(`/tracker/${userId}/history`)
       .then(response => {
-        debugger;
-        // {
-        //   medName: "xanax",
-        //     date: date,
-        //       frequency_taken: 1,
-        //   },
-        //take the data i got. replace the past seven days with the days that have appropriate days.
-        const pastdays = pastSevenDays();
-        const trackEvents = pastdays.map((date) => {
-          let dayMatch = null;
-          response.data.forEach(event => {
-            if (event.date_time === date) {
-              debugger;
-              dayMatch = event;
-            }
-          })
-          debugger;
-          if (dayMatch) {
-            dayMatch.date = dayMatch.date_time;
-            return dayMatch;
-          }
-          let med = 'no meds registered';
-          if (prescription[0]) {
-            med = prescription[0].name;
-          }
-          return {
-            medName: med,
-            date: date,
-            frequency_taken: 0,
-          }
-        });
-        setPillHistory(trackEvents)
-        debugger;
-        console.log(response.data);
+        setTotalPillHistory(response.data)
       })
       .catch(err => {
         console.log('get med history failed ', err)
       })
   }
-  const handleTookMed = (pillEvent, prescription, userId)=>{
-    pillEvent.frequency_taken++;
+  const handleTookMed = (pillEvent, prescription, userId, tookMed)=>{
+    tookMed ? pillEvent.frequency_taken++ : pillEvent.frequency_taken --
+    // pillEvent.frequency_taken++;
     const {date, frequency_taken} = pillEvent;
     const { medName, medId} = prescription
     Axios.post(`/tracker/${userId}/history`,{
@@ -106,6 +75,43 @@ const MedTracker = () => {
     }).then(()=>{
       getServerData();
     })
+  }
+  const handleChooseMed = (medIndex)=>{
+    const selectedMed =prescription[medIndex]
+    setCurrentMed(selectedMed)
+    console.log(selectedMed);
+    // {
+    //   medName: "xanax",
+    //     date: date,
+    //       frequency_taken: 1,
+    //   },
+    //take the data i got. replace the past seven days with the days that have appropriate days.
+    const pastdays = pastSevenDays();
+    const trackEvents = pastdays.map((date) => {
+      let dayMatch = null;
+      totalPillHistory.forEach(event => {
+        debugger;
+        if (event.date_time === date && event.meds_history_med == selectedMed.users_meds_med) {
+          dayMatch = event;
+        }
+      })
+      if (dayMatch) {
+        dayMatch.date = dayMatch.date_time;
+        return dayMatch;
+      }
+      let med = 'no meds registered';
+      if (selectedMed) {
+        debugger;
+        med = selectedMed.medName;
+      }
+      return {
+        medName: med,
+        date: date,
+        frequency_taken: 0,
+
+      }
+    });
+    setPillHistory(trackEvents);
   }
   const pastSevenDays = ()=>{
     const daysArr = [];
@@ -137,12 +143,12 @@ const MedTracker = () => {
         <h1>Paul Town</h1>
         <Dropdown isOpen={dropdownOpen} toggle={toggle}>
           <DropdownToggle caret>
-            Choose Medicine
+            {currentMed.medName}
         </DropdownToggle>
           <DropdownMenu>
             <DropdownItem header>Meds Taken</DropdownItem>
-            {prescription.map((med)=>{
-              return (<DropdownItem>{med.medName}</DropdownItem>);
+            {prescription.map((med, index)=>{
+              return (<DropdownItem onClick={() => { handleChooseMed(index)}}>{med.medName}</DropdownItem>);
             })}
           </DropdownMenu>
         </Dropdown>
@@ -151,13 +157,26 @@ const MedTracker = () => {
             {pillHistory.map((pillEvent)=>{
               return (
                 <TextEvent date={pillEvent.date}
+                  marker={()=>{
+                    console.log(currentMed.frequency[0])
+                    if(pillEvent.frequency_taken< currentMed.frequency[0]){
+                      return MyCustomMarkerNeg();
+                    } else {
+                      return MyCustomMarkerPos();
+                    }
+                  }}
                     className="text-left"
-                  text={prescription[0] ? prescription[0].medName : "yo no data yet"} >
+                  text={`Took Medicine ${pillEvent.frequency_taken} times this day.`} >
                   <div>
                     <Button onClick={(e) => { 
                       e.preventDefault();
-                      handleTookMed(pillEvent, prescription[0], userId) }}>
-                      Took Medicine {pillEvent.frequency_taken} times this day.
+                      handleTookMed(pillEvent, currentMed, userId, true) }}>
+                      Add Times Taken
+                    </Button>
+                    <Button onClick={(e) => {
+                      e.preventDefault();
+                      handleTookMed(pillEvent, currentMed, userId, false)}}>
+                      subtract medicine
                     </Button>
                   </div>
               </TextEvent>
