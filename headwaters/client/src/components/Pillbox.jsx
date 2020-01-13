@@ -70,6 +70,7 @@ const Pillbox = () => {
   const handleDate = e => {
     e.preventDefault();
     const { value } = e.target;
+    
     setDate(value);
   };
 

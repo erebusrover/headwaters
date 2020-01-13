@@ -98,6 +98,9 @@ CREATE TABLE meds_history (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   meds_history_med INT,
+    date_time VARCHAR(255),
+
+  
     INDEX par_ind_history_med (meds_history_med),
     CONSTRAINT fk_history_med FOREIGN KEY (meds_history_med)
     REFERENCES meds(id)
