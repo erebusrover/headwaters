@@ -37,6 +37,7 @@ const MedTracker = () => {
     return newArr.join("/");
   }
   const handleTookMed = (pillEvent, prescription, userId)=>{
+    pillEvent.frequency_taken++;
     const {date, frequency_taken} = pillEvent;
     debugger;
     const { medName, medId} = prescription
@@ -45,14 +46,15 @@ const MedTracker = () => {
       medName,
       freq: frequency_taken,
       medId
+    }).then(()=>{
+      return 
     })
   }
   const pastSevenDays = ()=>{
-    const dummyDate = new Date().toString();
-    const currentDay = moment()
-    const daysArr = [currentDay];
-    for(let i = 0; i < 6; i++){
-      daysArr.push(currentDay.subtract(i, 'days'))
+    const daysArr = [];
+    for(let i = 0; i < 7; i++){
+      let currentDay = moment().subtract(i,'days')
+      daysArr.push(currentDay)
     }
     const daysArrMapped = daysArr.map(day=>{
       return moment(
@@ -60,13 +62,6 @@ const MedTracker = () => {
         'ddd MMM DD YYYY HH:mm:ss',
       ).format('MM/DD/YY');
     })
-
-
-    const date = moment(
-      dummyDate,
-      'ddd MMM DD YYYY HH:mm:ss',
-      ).format('MM/DD/YY');
-    debugger;
     return daysArrMapped;
     
   }
@@ -117,12 +112,39 @@ const MedTracker = () => {
     })
     Axios.get(`/tracker/${userId}/history`)
     .then(response=>{
+      debugger;
       // {
       //   medName: "xanax",
       //     date: date,
       //       frequency_taken: 1,
       //   },
-      setPillHistory(response.data)
+      //take the data i got. replace the past seven days with the days that have appropriate days.
+      const pastdays = pastSevenDays();
+      const trackEvents =pastdays.map((date)=>{
+        let dayMatch = null;
+        response.data.forEach(event=>{
+          if (event.date_time === date){
+            debugger;
+            dayMatch = event;
+          }
+        })
+        debugger;
+        if (dayMatch){
+          dayMatch.date = dayMatch.date_time;
+          return dayMatch;
+        }
+        let med = 'no meds registered';
+        if (prescription[0]){
+          med = prescription[0].name;
+        }
+        return {
+          medName : med,
+          date : date,
+          frequency_taken: 0,
+        }
+      });
+      setPillHistory(trackEvents)
+      debugger;
       console.log(response.data);
     })
     .catch(err=>{
@@ -131,46 +153,36 @@ const MedTracker = () => {
 
     //! possible frequencies "1x daily", "2x daily", "3x daily", "1x weekly"
     //todo delete after endpoint is build
-    pastSevenDays();
-    const dummyDate =  new Date().toString();
-    const date = moment(
-      dummyDate,
-      'ddd MMM DD YYYY HH:mm:ss',
-    ).format('MM/DD/YY');
-    debugger;
-    const dummyData = {
-      prescriptions: [
-        {
-          //user meds table
-          medName: "xanax",
-          dosage: 2,
-          frequency: "1x daily",
-          scheduled_times: "often",
-          practicioner: "bobby",
-          notes: "lala",
-        }
-      ],
-      pillHistory: [
-        {
-          medName : "xanax",
-          date: date,
-          frequency_taken: 1,
-        },
-        {
-          medName: "xanax",
-          date: date,
-          frequency_taken: 1,
-        },
-        {
-          medName: "xanax",
-          date: date,
-          frequency_taken: 1,
-        }
-      ],
-    }
-    setPrescription(dummyData.prescriptions);
-    setPillHistory(dummyData.pillHistory);
-    //todo delete after endpoint is build
+    // pastSevenDays();
+    // const dummyDate =  new Date().toString();
+    // const date = moment(
+    //   dummyDate,
+    //   'ddd MMM DD YYYY HH:mm:ss',
+    // ).format('MM/DD/YY');
+    // debugger;
+    // const dummyData = {
+    //   prescriptions: [
+    //     {
+    //       //user meds table
+    //       medName: "xanax",
+    //       dosage: 2,
+    //       frequency: "1x daily",
+    //       scheduled_times: "often",
+    //       practicioner: "bobby",
+    //       notes: "lala",
+    //     }
+    //   ],
+    //   pillHistory: [
+    //     {
+    //       medName: "xanax",
+    //       date: date,
+    //       frequency_taken: 1,
+    //     }
+    //   ],
+    // }
+    // setPrescription(dummyData.prescriptions);
+    // setPillHistory(dummyData.pillHistory);
+    // //todo delete after endpoint is build
   }, []);
   return (
     <Container>
@@ -197,19 +209,14 @@ const MedTracker = () => {
               return (
               <TextEvent 
               // date={dateFormatter(pillEvent.date)} 
-                  date="1/1/14"
+                  date={pillEvent.date}
               // key={dateFormatter(pillEvent.date)}
               text={prescription[0] ? prescription[0].medName : "yo no data yet"} >
                   <Button onClick={() => { handleTookMed(pillEvent, prescription[0], userId)}}>
-                  Took Medicine
+                    Took Medicine {pillEvent.frequency_taken} times this day.
                 </Button>
               </TextEvent>);
             })}
-            <TextEvent date="1/1/19" text={prescription[0] ? prescription[0].medName: "yo no data yet"}>
-            </TextEvent>
-            <TextEvent date="1/1/14" text="**Markdown** is *supported*" />
-            <TextEvent date="1/1/12" text="**Markdown** is *supported*" />
-
           </Events>
         </Timeline>
       </div>
