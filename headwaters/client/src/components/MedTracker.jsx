@@ -24,7 +24,9 @@ const MedTracker = () => {
   const [totalPillHistory, setTotalPillHistory]=useState([]);
   const [pillHistory, setPillHistory] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen2, setDropdownOpen2] = useState(false);
   const [currentMed, setCurrentMed] = useState({ medName: "Choose Medicine"});
+  const [daysToRender, setDaysToRender] = useState(7);
   const spanPositiveStyle = {
     borderRadius: '4px',
     borderColor: '#070D24',
@@ -79,19 +81,11 @@ const MedTracker = () => {
   const handleChooseMed = (medIndex)=>{
     const selectedMed =prescription[medIndex]
     setCurrentMed(selectedMed)
-    console.log(selectedMed);
-    // {
-    //   medName: "xanax",
-    //     date: date,
-    //       frequency_taken: 1,
-    //   },
-    //take the data i got. replace the past seven days with the days that have appropriate days.
     const pastdays = pastSevenDays();
     const trackEvents = pastdays.map((date) => {
       let dayMatch = null;
       totalPillHistory.forEach(event => {
-        debugger;
-        if (event.date_time === date && event.meds_history_med == selectedMed.users_meds_med) {
+        if (event.date_time === date && event.meds_history_med == currentMed.users_meds_med) {
           dayMatch = event;
         }
       })
@@ -100,9 +94,8 @@ const MedTracker = () => {
         return dayMatch;
       }
       let med = 'no meds registered';
-      if (selectedMed) {
-        debugger;
-        med = selectedMed.medName;
+      if (currentMed) {
+        med = currentMed.medName;
       }
       return {
         medName: med,
@@ -113,9 +106,36 @@ const MedTracker = () => {
     });
     setPillHistory(trackEvents);
   }
-  const pastSevenDays = ()=>{
+  const handleChooseDays = (amount)=>{
+    setDaysToRender(amount);
+    const pastdays = pastSevenDays(amount);
+    const trackEvents = pastdays.map((date) => {
+      let dayMatch = null;
+      totalPillHistory.forEach(event => {
+        if (event.date_time === date && event.meds_history_med == currentMed.users_meds_med) {
+          dayMatch = event;
+        }
+      })
+      if (dayMatch) {
+        dayMatch.date = dayMatch.date_time;
+        return dayMatch;
+      }
+      let med = 'no meds registered';
+      if (currentMed) {
+        med = currentMed.medName;
+      }
+      return {
+        medName: med,
+        date: date,
+        frequency_taken: 0,
+
+      }
+    });
+    setPillHistory(trackEvents);
+  }
+  const pastSevenDays = (amount=daysToRender)=>{
     const daysArr = [];
-    for(let i = 0; i < 7; i++){
+    for (let i = 0; i < amount; i++){
       let currentDay = moment().subtract(i,'days')
       daysArr.push(currentDay)
     }
@@ -128,6 +148,7 @@ const MedTracker = () => {
     return daysArrMapped;
   }
   const toggle = () => setDropdownOpen(prevState => !prevState);
+  const toggle2 = () => setDropdownOpen2(prevState => !prevState);
   //settings for the timeline
   const opts = {
     layout: "inline-evts"
@@ -141,14 +162,26 @@ const MedTracker = () => {
       <div className="med-tracker">
         <h1 style={{ color: '#1B2F44', fontWeight: 'bolder', paddingLeft: '5px', paddingTop: '10px' }}>Medicine Tracker</h1>
         <h1>Paul Town</h1>
-        <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+        <Dropdown isOpen={dropdownOpen2} toggle={toggle2}>
           <DropdownToggle caret>
-            {currentMed.medName}
+            {"Showing " + daysToRender + "days"}
         </DropdownToggle>
           <DropdownMenu>
             <DropdownItem header>Meds Taken</DropdownItem>
-            {prescription.map((med, index)=>{
-              return (<DropdownItem onClick={() => { handleChooseMed(index)}}>{med.medName}</DropdownItem>);
+            <DropdownItem onClick={() => { handleChooseDays(7)}}>7</DropdownItem>
+            <DropdownItem onClick={() => { handleChooseDays(30) }}>30</DropdownItem>
+            <DropdownItem onClick={() => { handleChooseDays(90) }}>90</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+
+        <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+          <DropdownToggle caret>
+            {currentMed.medName}
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem header>Meds Taken</DropdownItem>
+            {prescription.map((med, index) => {
+              return (<DropdownItem onClick={() => { handleChooseMed(index) }}>{med.medName}</DropdownItem>);
             })}
           </DropdownMenu>
         </Dropdown>
