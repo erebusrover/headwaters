@@ -10,6 +10,8 @@ import {
   Button,
   UrlButton,
   TextEvent,
+  themes,
+  createTheme
 } from '@merc/react-timeline';
 import Axios from 'axios';
 import styled from 'styled-components';
@@ -27,22 +29,46 @@ const MedTracker = () => {
   const [dropdownOpen2, setDropdownOpen2] = useState(false);
   const [currentMed, setCurrentMed] = useState({ medName: "Choose Medicine"});
   const [daysToRender, setDaysToRender] = useState(7);
-  const spanPositiveStyle = {
-    borderRadius: '4px',
-    borderColor: '#070D24',
-    borderWidth: '3px',
-    // transform: 'rotate(45deg)',
-    backgroundColor: 'Green',
-  };
-  const spanNegativeStyle = {
-    borderRadius: '4px',
-    borderColor: '#070D24',
-    borderWidth: '3px',
-    // transform: 'rotate(45deg)',
-    backgroundColor: 'Red',
-  };
-  const MyCustomMarkerPos = () => <span style={spanPositiveStyle}>O</span>;
-  const MyCustomMarkerNeg = () => <span style={spanNegativeStyle}>O</span>;
+  // const spanPositiveStyle = {
+  //   borderRadius: '50%',
+  //   borderColor: '#070D24',
+  //   borderWidth: '3px',
+  //   // transform: 'rotate(45deg)',
+  //   backgroundColor: 'Green',
+  // };
+  // const spanNegativeStyle = {
+  //   borderRadius: '50%',
+  //   borderColor: '#070D24',
+  //   // borderWidth: '3px',
+  //   // transform: 'rotate(45deg)',
+  //   backgroundColor: 'Red',
+  // };
+  const customTheme = createTheme(themes.default, {
+    timelineTrack: {
+      background: `linear-gradient(
+      to bottom, #5ec0a7 0%,#070d24 100%
+    )`,
+      backgroundColor: "#1B2F44",
+    },
+    date: {
+      backgroundColor: '#1B2F44',
+      color: '#fff',
+    },
+    marker: {
+      borderColor: '#1B2F44',
+      backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    button: {
+      backgroundColor: '#1B2F44',
+    },
+    card: {
+      backgroundColor: 'rgba(255, 255, 255, 0.3)',
+      width: '40%',
+      height: '60%',
+    }
+  });
+  const MyCustomMarkerPos = () => <span >✔️</span>;
+  const MyCustomMarkerNeg = () => <span >✖️</span>;
   const getServerData = ()=>{
     Axios.get(`/pillbox/${userId}/`)
       .then(response => {
@@ -54,7 +80,6 @@ const MedTracker = () => {
         
         //todo this is the problem somehow
         setPrescription(prescriptions)
-        console.log(prescriptions);
       })
     Axios.get(`/tracker/${userId}/history`)
       .then(response => {
@@ -64,11 +89,11 @@ const MedTracker = () => {
         console.log('get med history failed ', err)
       })
   }
-  const handleTookMed = (pillEvent, prescription, userId, tookMed)=>{
+  const handleTookMed = (pillEvent, userId, tookMed)=>{
     tookMed ? pillEvent.frequency_taken++ : pillEvent.frequency_taken --
     // pillEvent.frequency_taken++;
     const {date, frequency_taken} = pillEvent;
-    const { medName, medId} = prescription
+    const { medName, medId} = currentMed
     Axios.post(`/tracker/${userId}/history`,{
       date,
       medName,
@@ -79,13 +104,13 @@ const MedTracker = () => {
     })
   }
   const handleChooseMed = (medIndex)=>{
-    const selectedMed =prescription[medIndex]
+    const selectedMed = prescription[medIndex]
     setCurrentMed(selectedMed)
     const pastdays = pastSevenDays();
     const trackEvents = pastdays.map((date) => {
       let dayMatch = null;
       totalPillHistory.forEach(event => {
-        if (event.date_time === date && event.meds_history_med == currentMed.users_meds_med) {
+        if (event.date_time === date && event.meds_history_med == selectedMed.users_meds_med) {
           dayMatch = event;
         }
       })
@@ -94,8 +119,8 @@ const MedTracker = () => {
         return dayMatch;
       }
       let med = 'no meds registered';
-      if (currentMed) {
-        med = currentMed.medName;
+      if (selectedMed) {
+        med = selectedMed.medName;
       }
       return {
         medName: med,
@@ -161,21 +186,20 @@ const MedTracker = () => {
     <Container>
       <div className="med-tracker">
         <h1 style={{ color: '#1B2F44', fontWeight: 'bolder', paddingLeft: '5px', paddingTop: '10px' }}>Medicine Tracker</h1>
-        <h1>Paul Town</h1>
         <Dropdown isOpen={dropdownOpen2} toggle={toggle2}>
-          <DropdownToggle caret>
+          <DropdownToggle caret style={{backgroundColor: '#1B2F44'}}>
             {"Showing " + daysToRender + "days"}
         </DropdownToggle>
           <DropdownMenu>
-            <DropdownItem header>Meds Taken</DropdownItem>
+            <DropdownItem header >Meds Taken</DropdownItem>
             <DropdownItem onClick={() => { handleChooseDays(7)}}>7</DropdownItem>
             <DropdownItem onClick={() => { handleChooseDays(30) }}>30</DropdownItem>
             <DropdownItem onClick={() => { handleChooseDays(90) }}>90</DropdownItem>
           </DropdownMenu>
         </Dropdown>
-
+    <br />
         <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-          <DropdownToggle caret>
+          <DropdownToggle caret style={{ backgroundColor: '#1B2F44' }}>
             {currentMed.medName}
           </DropdownToggle>
           <DropdownMenu>
@@ -185,10 +209,12 @@ const MedTracker = () => {
             })}
           </DropdownMenu>
         </Dropdown>
-        <Timeline opts={opts}>
+
+        <Timeline opts={opts} theme={customTheme}>
           <Events>
             {pillHistory.map((pillEvent)=>{
               return (
+                
                 <TextEvent date={pillEvent.date}
                   marker={()=>{
                     console.log(currentMed.frequency[0])
@@ -203,12 +229,12 @@ const MedTracker = () => {
                   <div>
                     <Button onClick={(e) => { 
                       e.preventDefault();
-                      handleTookMed(pillEvent, currentMed, userId, true) }}>
+                      handleTookMed(pillEvent, userId, true) }}>
                       Add Times Taken
                     </Button>
                     <Button onClick={(e) => {
                       e.preventDefault();
-                      handleTookMed(pillEvent, currentMed, userId, false)}}>
+                      handleTookMed(pillEvent, userId, false)}}>
                       subtract medicine
                     </Button>
                   </div>
