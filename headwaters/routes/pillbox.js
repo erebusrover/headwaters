@@ -1,5 +1,8 @@
 const express = require('express');
-const { addUserMedicationMaster, getUserMedications } = require('../server/db/connection');
+const { 
+  addUserMedicationMaster, 
+  getUserMedications,
+} = require('../server/db/connection');
 
 const pillboxRouter = express.Router();
 

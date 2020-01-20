@@ -82,10 +82,31 @@ CREATE TABLE users_meds (
   -- miligrams
   dosage INT, 
   -- times per day
-  frequency INT,
+  frequency VARCHAR(20) NOT NULL,
   scheduled_times MEDIUMTEXT,
+  date_time VARCHAR(255),
   practitioner VARCHAR(255) NOT NULL,
   notes MEDIUMTEXT
+);
+
+CREATE TABLE meds_history (
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  meds_history_user INT,
+    INDEX par_ind_history_user (meds_history_user),
+    CONSTRAINT fk_history_user FOREIGN KEY (meds_history_user)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  meds_history_med INT,
+    date_time VARCHAR(255),
+
+  
+    INDEX par_ind_history_med (meds_history_med),
+    CONSTRAINT fk_history_med FOREIGN KEY (meds_history_med)
+    REFERENCES meds(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  frequency_taken VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE events (

@@ -25,22 +25,10 @@ const Home = () => {
     });
   }, []);
 
-
-  if (loading) {
-    return (
-      <section className="home">
-        <div className="home-image">
-          <Image src="https://i.ibb.co/9nSQ3ds/41590019.jpg" fluid />
-        </div>
-      </section>
-    );
-  }
-
   return (
     <div className="home">
-      <Image src="https://i.ibb.co/9nSQ3ds/41590019.jpg" fluid />
       <div className="home-content">
-        <strong>&quot;{quotes[Math.floor(Math.random() * quotes.length)].content}&quot;<br />{quotes[0].author}</strong>
+        {/* <strong>&quot;{quotes[Math.floor(Math.random() * quotes.length)].content}&quot;<br />{quotes[0].author}</strong> */}
       </div>
     </div>
   );

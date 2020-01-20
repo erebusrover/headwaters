@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import axios from 'axios';
-import { Col, Row } from 'reactstrap';
+import { Col, Row, Container } from 'reactstrap';
 import NewEvent from './NewEvent.jsx';
 import EventOptions from './EventOptions.jsx';
 import EditEvent from './EditEvent.jsx';
@@ -21,6 +21,7 @@ import {
   createUserEvent,
   deleteUserEvent,
   handleIncomingData,
+  handleIncomingMeds,
   patchUserEvent,
 } from '../../utils/helpers';
 
@@ -29,11 +30,13 @@ import '../../styles/calendar.css';
 const Calendar = () => {
   const { user } = useAuth0();
   const [events, setEvents] = useState([]);
+  const [meds, setMeds] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserEvents() {
       await axios.get(`/calendar/${user.id}/events`).then(res => {
+        //console.log(res);
         async function formatEvents() {
           const response = await handleIncomingData(res.data);
           return response;
@@ -45,6 +48,18 @@ const Calendar = () => {
       });
     }
 
+    async function fetchMedEvents() {
+      await axios.get(`/pillbox/${user.id}`)
+        .then(res => {
+          setMeds(res.data);
+          return res.data;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    };
+
+    fetchMedEvents();
     fetchUserEvents();
     // eslint-disable-next-line
   }, []);
@@ -75,7 +90,6 @@ const Calendar = () => {
   const [showErrorPostToast, setErrorPostToast] = useState(false);
   const [showErrorPatchToast, setErrorPatchToast] = useState(false);
   const [showErrorRemoveToast, setErrorRemoveToast] = useState(false);
-
 
   const togglePostToast = () => {
     setPostToast(false);
@@ -109,7 +123,6 @@ const Calendar = () => {
   const toggleEditForm = () => {
     setShowEditForm(false);
   }
-
 
   const handleDateClick = arg => {
     setClickedDate([arg.date]);
@@ -159,6 +172,7 @@ const Calendar = () => {
 
   const handleEventPost = newEventObj => {
     createUserEvent(newEventObj)
+    //
       .then(() => {
         // let user know via post toast component
         setShowEventForm(false);
@@ -206,11 +220,15 @@ const Calendar = () => {
     return 'Loading...';
   }
 
+  console.log(meds);
+
   return (
+    <Container>
     <div className="cal-font">
       <div className="calendar-top" />
+      <h1 style={{ color: '#1B2F44', fontWeight: 'bolder', paddingLeft: '10px' }}>Calendar</h1>
       <Row>
-        <Col xs="6">
+        <Col xs="8">
           <div className="calendar">
             <FullCalendar
               defaultView="dayGridMonth"
@@ -225,9 +243,12 @@ const Calendar = () => {
               dateClick={handleDateClick}
               eventClick={eventClick}
             />
+            <div>{meds.map(med => 
+              <div style={{ fontSize: '150%', color: '#1B2F44'}}><b>{med.name}:</b>  {med.frequency}</div>
+              )}</div>
           </div>
         </Col>
-        <Col xs="5">
+        <Col xs="4">
           {showEventForm && (
             <NewEvent
               className="calendar"
@@ -261,6 +282,7 @@ const Calendar = () => {
         </Col>
       </Row>
     </div>
+    </Container>
   );
 };
 

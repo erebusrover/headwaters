@@ -1,6 +1,5 @@
 /* eslint-disable no-return-await */
 import axios from 'axios';
-
 /**
  * Axios authentication helpers
  */
@@ -84,6 +83,26 @@ export const handleIncomingData = incomingEvents => {
   }, []);
 };
 
+
+export const handleIncomingMeds = incomingEvents => {
+  return incomingEvents.reduce((newEventObj, incomingEvent) => {
+    const start = incomingEvent.date_time;
+    start.replace(' ', 'T');
+
+    newEventObj.push({
+      user: incomingEvent.users_meds_user,
+      id: incomingEvent.users_meds_med,
+      start,
+      color: chooseEventColor(incomingEvent.type),
+      extendedProps: {
+        dosage: incomingEvent.dosage,
+      },
+    });
+
+    return newEventObj;
+  }, []);
+};
+
 // export const editUserEvent = async({}) => {
 //  await.axios.patch(endpoint, {})
 // };
@@ -140,7 +159,6 @@ export const getUserMedications = async userId => {
     .get(`/pillbox/${userId}`)
     .then(res => {
       return res.data;
-      debugger;
     })
     .catch(err => console.error(err));
 };

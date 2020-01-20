@@ -10,11 +10,12 @@ import { useAuth0 } from '../react-auth0-spa.jsx';
 import JournalToast from './toasts/JournalToast.jsx';
 import '../styles/event-form.css';
 
-const { getUserJournalEntries, addJournalEntry } = require('../utils/helpers');
+const { addJournalEntry } = require('../utils/helpers');
 
 const Journal = () => {
   const { user } = useAuth0();
   const [userId] = useState(user.id);
+
   const [text, setJournal] = useState([]);
   const [status, setStatus] = useState('happiness');
   const [h2oz, setWater] = useState([]);
@@ -54,21 +55,21 @@ const Journal = () => {
   return (
     <Container>
       <div className="journal-entry-form">
-        <h1>Journal</h1>
+        <h1 style={{ color: '#1B2F44', fontWeight: 'bolder', paddingLeft: '5px', paddingTop: '10px' }}>Journal</h1>
         <Row>
           <Col sm={8}>
             <Form id="journal">
               <FormGroup>
                 <Label for="text">today&apos;s journal entry:</Label>
                 <Input
-                  type="textarea"
+                  type="text"
                   name="text"
                   id="text"
+                  rows="10"
+                  cols="50"
                   onChange={e => {
                     setJournal(e.target.value);
                   }}
-                  rows="10"
-                  cols="50"
                 />
               </FormGroup>
               <FormGroup>
@@ -136,7 +137,7 @@ const Journal = () => {
               <FormGroup>
                 <Label for="nutrition">nutrition notes:</Label>
                 <Input
-                  type="textarea"
+                  type="text"
                   name="nutrition"
                   id="nutrition"
                   onChange={e => {
@@ -146,9 +147,9 @@ const Journal = () => {
               </FormGroup>
               <Button
                 style={{
-                  backgroundColor: '#3024b0',
+                  backgroundColor: '#083855',
                   border: '0px',
-                }}
+            }}
                 onClick={submitJournal}
               >
                 save

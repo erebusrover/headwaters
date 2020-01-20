@@ -1,8 +1,8 @@
 const express = require('express');
 const { getUserEvents, insertUserEvent, deleteUserEvent, patchUserEvent } = require('../server/db/connection');
-
 const calendarRouter = express.Router();
 
+//calendar/userid/events
 calendarRouter.get('/:userId/events', (req, res) => {
   const { userId } = req.params;
 
@@ -14,20 +14,25 @@ calendarRouter.get('/:userId/events', (req, res) => {
       res.sendStatus(404);
     });
 });
-
+//calender/userId/events
 calendarRouter.post('/:userId/events', (req, res) => {
   const newEventObj = req.body[0];
-
   insertUserEvent(newEventObj)
     .then(() => {
+      console.log('that event has been saved to our websites database');
+   // })
+  })
+    .then(() => {
       res.sendStatus(201);
+      console.log('I saved that event to our local database');
     })
     .catch(err => {
-      console.log(err);
       res.sendStatus(501);
+      console.log(err);
     });
 });
 
+//calender/userId/events/eventId
 calendarRouter.delete('/:userId/events/:eventId', (req, res) => {
   const { userId, eventId } = req.params;
 

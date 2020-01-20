@@ -722,8 +722,8 @@ Lots taken from Flatly (MIT): https://bootswatch.com/4/flatly/bootstrap.css
 /* "primary" coloring */
 .fc-button-primary {
   color: #ffffff;
-  background-color: #144f46 !important;
-  border-color: #144f46 !important;
+  background-color: #083855 !important;
+  border-color: #083855 !important;
 }
 
 .fc-button-primary:hover {
@@ -1061,26 +1061,22 @@ Lots taken from Flatly (MIT): https://bootswatch.com/4/flatly/bootstrap.css
 }
 
 .fc-dayGridMonth-button:hover {
-background-color: #f45d5d !important;
-border: #f45d5d;
+background-color: #215c7e !important;
+border: #215c7e;
 opacity: 0.75 !important;
-
 }
 
 .fc-timeGridWeek-button:hover {
-background-color: #f45d5d !important;
-border: #f45d5d;
+background-color: #214c7e !important;
+border: #215c7e;
 opacity: 0.75 !important;
-
 }
 
 .fc-timeGridDay-button:hover {
-background-color: #f45d5d !important;
-border: #f45d5d;
+background-color: #215c7e !important;
+border: #215c7e;
 opacity: 0.75 !important;
-
 }
-
 
 .cal-font {
   font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
@@ -1096,4 +1092,6 @@ opacity: 0.75 !important;
   max-width: 800px;
   min-width: 400px;
   padding: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 15px;
 }

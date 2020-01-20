@@ -26,7 +26,7 @@ const NewEvent = props => {
 
     const { handleEventPost } = props;
     // date and time conversion for mysql insertion
-    const dateConvert = moment(eventDate, 'ddd MMM DD YYYY').format(
+    const dateConvert = moment(eventDate, 'YYYY-MM-DD').format(
       'YYYY-MM-DD',
     );
     const dateTime = `${dateConvert} ${time}`;
@@ -49,9 +49,6 @@ const NewEvent = props => {
   return (
     <div className="new-event-form">
       <Form>
-        <FormGroup>
-          <Label for="new-event">New Event</Label>
-        </FormGroup>
         <FormGroup>
           <Label for="event-name">Event Name</Label>
           <Input
@@ -144,7 +141,7 @@ const NewEvent = props => {
           />
         </FormGroup>
       </Form>
-      <Button style={{ backgroundColor: '#3024b0', border: '0px' }} onClick={handleEventSubmit} size="sm">
+      <Button style={{ backgroundColor: '#083855', border: '0px' }} onClick={handleEventSubmit} size="sm">
         add event
       </Button>{' '}
     </div>

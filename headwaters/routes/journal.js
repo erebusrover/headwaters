@@ -10,7 +10,6 @@ const journalRouter = express.Router();
 // @Desc --> Get a user's journals from database
 journalRouter.get('/:userId/entries', (req, res) => {
   const { userId } = req.params;
-
   getUserJournalEntries(userId)
     .then(journalRows => {
       res.send(journalRows);

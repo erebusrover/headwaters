@@ -17,8 +17,8 @@
 		.5px -.5px 0 #476275,
 		-.5px .5px 0 #476275,
 		.5px .5px 0 #476275;
-   top: 50%; right: 0; bottom: 0; left: 50%;
-   transform: translate(-50%, -50%);
-   position: fixed; 
-   overflow: hidden;
+    top: 50%; right: 0; bottom: 0; left: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed; 
+    overflow: hidden;
 }
