@@ -34,7 +34,7 @@
 		"sass-loader": "^8.0.0",
 		"vex-js": "^4.1.0",
 		"webpack": "^4.41.4",
-		"webpack-cli": "^3.3.0"
+		"webpack-cli": "^3.3.12"
 	},
 	"dependencies": {
 		"@auth0/auth0-spa-js": "^1.6.0",
