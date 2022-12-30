@@ -28,7 +28,7 @@
 		"express-ejs-layouts": "^2.5.0",
 		"express-session": "^1.17.0",
 		"file-loader": "^5.0.2",
-		"mocha": "^6.2.2",
+		"mocha": "^10.2.0",
 		"node-sass": "^4.13.0",
 		"nodemon": "^2.0.2",
 		"sass-loader": "^8.0.0",
